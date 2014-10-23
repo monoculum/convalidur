@@ -2,28 +2,28 @@ package valider
 
 import (
 	"errors"
+	"reflect"
 	"regexp"
 	"strconv"
 	"time"
-	"reflect"
 )
 
 var (
-	ErrRequired = errors.New("is required")
+	ErrRequired   = errors.New("is required")
 	ErrNotMatched = errors.New("is not a valid email")
-	ErrNotEqual = errors.New("is not a equal to value passed")
-	ErrOutRange = errors.New("is out of range")
-	ErrIn = errors.New("is not in the values passed")
-	ErrLen = errors.New("is more length than value passed")
-	ErrDate = errors.New("is not a valid datetime")
+	ErrNotEqual   = errors.New("is not a equal to value passed")
+	ErrOutRange   = errors.New("is out of range")
+	ErrIn         = errors.New("is not in the values passed")
+	ErrLen        = errors.New("is more length than value passed")
+	ErrDate       = errors.New("is not a valid datetime")
 
-	ErrUnsupported = errors.New("unsopported type")
+	ErrUnsupported  = errors.New("unsopported type")
 	ErrBadParameter = errors.New("bad parameter")
 )
 
 const (
 	PATTERN_EMAIL = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"
-	PATTERN_URL = `(?i)^([a-z]([a-z]|\d|\+|-|\.)*):(\/\/(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?((\[(|(v[\da-f]{1,}\.(([a-z]|\d|-|\.|_|~)|[!\$&'\(\)\*\+,;=]|:)+))\])|((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=])*)(:\d*)?)(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*|(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)|((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)|((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)){0})(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$`
+	PATTERN_URL   = `(?i)^([a-z]([a-z]|\d|\+|-|\.)*):(\/\/(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?((\[(|(v[\da-f]{1,}\.(([a-z]|\d|-|\.|_|~)|[!\$&'\(\)\*\+,;=]|:)+))\])|((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=])*)(:\d*)?)(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*|(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)|((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)|((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)){0})(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$`
 )
 
 type Validator struct {
@@ -35,9 +35,9 @@ func New(errors *map[string][]string) *Validator {
 }
 
 type Str struct {
-	value     string
-	field     string
-	errors    *map[string][]string
+	value  string
+	field  string
+	errors *map[string][]string
 }
 
 func (v *Validator) Str(value, field string) *Str {
@@ -122,9 +122,9 @@ func (str *Str) RegExp(pattern string) *Str {
 }
 
 type Int struct {
-	value     int
-	field     string
-	errors    *map[string][]string
+	value  int
+	field  string
+	errors *map[string][]string
 }
 
 func (v *Validator) Int(value int, field string) *Int {
@@ -160,14 +160,14 @@ func (int *Int) Range(min, max int) *Int {
 }
 
 type Slice struct {
-	raw     interface {}
-	field     string
-	errors    *map[string][]string
+	raw    interface{}
+	field  string
+	errors *map[string][]string
 
 	value reflect.Value
 }
 
-func (v *Validator) Slice(value interface {}, field string) *Slice {
+func (v *Validator) Slice(value interface{}, field string) *Slice {
 	return &Slice{raw: value, field: field, errors: v.Errors}
 }
 
@@ -194,7 +194,8 @@ func (sl *Slice) Range(min, max int) *Slice {
 	}
 	switch sl.value.Kind() {
 	case reflect.Slice, reflect.Array:
-		if sl.value.Len() < min || sl.value.Len() > max {
+		l := sl.value.Len()
+		if l < min || l > max {
 			(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], ErrOutRange.Error())
 		}
 	default:
@@ -203,14 +204,17 @@ func (sl *Slice) Range(min, max int) *Slice {
 	return sl
 }
 
-func (sl *Slice) In(values interface {}) *Slice {
+func (sl *Slice) In(values interface{}) *Slice {
 	sl.value = reflect.ValueOf(sl.raw)
 	if sl.value.Kind() == reflect.Ptr {
 		sl.value = sl.value.Elem()
 	}
 	switch sl.value.Kind() {
 	case reflect.Slice, reflect.Array:
-		if sl.value.Len() != 0 {
+		v := sl.value
+		l := v.Len()
+		for i := 0; i < l; i++ {
+			sl.value = v.Index(i)
 			sl.in(values)
 		}
 	default:
@@ -219,121 +223,117 @@ func (sl *Slice) In(values interface {}) *Slice {
 	return sl
 }
 
-func (sl *Slice) in(n interface {}) *Slice {
-	for i := 0; i <sl.value.Len(); i++ {
-		v := sl.value.Index(i)
-		found := false
-		switch v.Kind() {
-		case reflect.String:
-			values := reflect.ValueOf(n)
-			switch values.Kind() {
-			case reflect.Slice, reflect.Array:
-				for j := 0; j<values.Len(); j++ {
-					t := values.Index(j)
-					str := ""
-					switch t.Kind() {
-					case reflect.String:
+func (sl *Slice) in(n interface{}) *Slice {
+	found := false
+
+	switch sl.value.Kind() {
+	case reflect.String:
+		values := reflect.ValueOf(n)
+		switch values.Kind() {
+		case reflect.Slice, reflect.Array:
+			for j := 0; j < values.Len(); j++ {
+				t := values.Index(j)
+				str := ""
+				switch t.Kind() {
+				case reflect.String:
+					str = t.String()
+				case reflect.Interface:
+					if m, ok := t.Interface().(string); ok {
+						str = m
+					} else if t.Kind() == reflect.String {
 						str = t.String()
-					case reflect.Interface:
-						if m, ok := t.Interface().(string); ok {
-							str = m
-						} else if t.Kind() == reflect.String {
-							str = t.String()
-						}
-					default:
-						(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], ErrBadParameter.Error())
 					}
-					if v.String() == str {
-						found = true
-					}
+				default:
+					(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], ErrBadParameter.Error())
 				}
-			default:
-				(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], ErrBadParameter.Error())
-			}
-			if !found {
-				(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], ErrIn.Error())
-			}
-
-		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-			values := reflect.ValueOf(n)
-			switch values.Kind() {
-			case reflect.Slice, reflect.Array:
-				for j := 0; j<values.Len(); j++ {
-					t := values.Index(j)
-					num := 0
-					switch t.Kind() {
-					case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-						num = int(t.Int())
-					case reflect.Interface:
-						switch p := t.Interface().(type) {
-						case int:
-							num = int(p)
-						case int8:
-							num = int(p)
-						case int16:
-							num = int(p)
-						case int32:
-							num = int(p)
-						case int64:
-							num = int(p)
-						default:
-							switch t.Kind() {
-							case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-								num = int(t.Int())
-							default:
-								(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], ErrBadParameter.Error())
-							}
-						}
-					default:
-						(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], ErrBadParameter.Error())
-					}
-					if int(v.Int()) == num {
-						found = true
-					}
+				if sl.value.String() == str {
+					found = true
 				}
-			default:
-				(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], ErrBadParameter.Error())
 			}
-			if !found {
-				(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], ErrIn.Error())
-			}
-
-		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
-			// TODO
-		case reflect.Float32, reflect.Float64:
-			// TODO
-		case reflect.Bool:
-			// TODO
-		case reflect.Interface:
-			// TODO
 		default:
-			(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], ErrUnsupported.Error())
+			(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], ErrBadParameter.Error())
 		}
-
+		if !found {
+			(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], ErrIn.Error())
+		}
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		values := reflect.ValueOf(n)
+		switch values.Kind() {
+		case reflect.Slice, reflect.Array:
+			for j := 0; j < values.Len(); j++ {
+				t := values.Index(j)
+				num := 0
+				switch t.Kind() {
+				case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+					num = int(t.Int())
+				case reflect.Interface:
+					switch p := t.Interface().(type) {
+					case int:
+						num = int(p)
+					case int8:
+						num = int(p)
+					case int16:
+						num = int(p)
+					case int32:
+						num = int(p)
+					case int64:
+						num = int(p)
+					default:
+						switch t.Kind() {
+						case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+							num = int(t.Int())
+						default:
+							(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], ErrBadParameter.Error())
+						}
+					}
+				default:
+					(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], ErrBadParameter.Error())
+				}
+				if int(sl.value.Int()) == num {
+					found = true
+				}
+			}
+		default:
+			(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], ErrBadParameter.Error())
+		}
+		if !found {
+			(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], ErrIn.Error())
+		}
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+		// TODO
+	case reflect.Float32, reflect.Float64:
+		// TODO
+	case reflect.Bool:
+		// TODO
+	case reflect.Interface:
+		// TODO
+	default:
+		(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], ErrUnsupported.Error())
 	}
+
 	return sl
 }
 
 type Map struct {
-	raw     interface {}
-	field     string
-	errors    *map[string][]string
+	raw    interface{}
+	field  string
+	errors *map[string][]string
 
 	value reflect.Value
 }
 
-func (v *Validator) Map(value interface {}, field string) *Map {
+func (v *Validator) Map(value interface{}, field string) *Map {
 	return &Map{raw: value, field: field, errors: v.Errors}
 }
 
 func (ma *Map) Required() *Map {
-	value := reflect.ValueOf(ma.raw)
-	if value.Kind() == reflect.Ptr {
-		value = value.Elem()
+	ma.value = reflect.ValueOf(ma.raw)
+	if ma.value.Kind() == reflect.Ptr {
+		ma.value = ma.value.Elem()
 	}
-	switch value.Kind() {
+	switch ma.value.Kind() {
 	case reflect.Map:
-		if value.Len() == 0 {
+		if ma.value.Len() == 0 {
 			(*ma.errors)[ma.field] = append((*ma.errors)[ma.field], ErrRequired.Error())
 		}
 	default:
@@ -343,16 +343,16 @@ func (ma *Map) Required() *Map {
 }
 
 func (ma *Map) Range(min, max int) *Map {
-	value := reflect.ValueOf(ma.raw)
-	if value.Kind() == reflect.Ptr {
-		value = value.Elem()
+	ma.value = reflect.ValueOf(ma.raw)
+	if ma.value.Kind() == reflect.Ptr {
+		ma.value = ma.value.Elem()
 	}
-	if value.Len() == 0 {
+	if ma.value.Len() == 0 {
 		return ma
 	}
-	switch value.Kind() {
+	switch ma.value.Kind() {
 	case reflect.Map:
-		if value.Len() < min || value.Len() > max {
+		if ma.value.Len() < min || ma.value.Len() > max {
 			(*ma.errors)[ma.field] = append((*ma.errors)[ma.field], ErrOutRange.Error())
 		}
 	default:
@@ -361,7 +361,7 @@ func (ma *Map) Range(min, max int) *Map {
 	return ma
 }
 
-func (ma *Map) In(values interface {}) *Map {
+func (ma *Map) In(values interface{}) *Map {
 	return ma
 }
 
@@ -375,10 +375,10 @@ func (ma *Map) Date(layout string) *Map {
 	}
 	switch ma.value.Kind() {
 	case reflect.Map:
-	for _, key := range ma.value.MapKeys() {
-		ma.value = ma.value.MapIndex(key)
-		ma.date(layout)
-	}
+		for _, key := range ma.value.MapKeys() {
+			ma.value = ma.value.MapIndex(key)
+			ma.date(layout)
+		}
 	default:
 		(*ma.errors)[ma.field] = append((*ma.errors)[ma.field], ErrUnsupported.Error())
 	}
@@ -389,7 +389,7 @@ func (ma *Map) date(layout string) *Map {
 	switch ma.value.Kind() {
 	case reflect.Slice, reflect.Array:
 		l := ma.value.Len()
-		for i := 0; i<l; i++ {
+		for i := 0; i < l; i++ {
 			ma.value = ma.value.Index(i)
 			ma.date(layout)
 		}
