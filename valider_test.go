@@ -72,6 +72,33 @@ func TestSliceIn(t *testing.T) {
 	if len(errors) > 0 {
 		t.Errorf("there should not be errors...")
 	}
+
+	multiSlice := make([][]string, 1, 1)
+	multiSlice[0] = []string{"hola"}
+	errors = make(map[string][]string)
+	valid = New(&errors)
+	valid.Slice(multiSlice, "In").In([]string{"hola", "adios"})
+	if len(errors) > 0 {
+		t.Errorf("there should not be errors...")
+	}
+
+	sliceMap := make([]map[string]string, 1, 1)
+	sliceMap[0] = map[string]string{"hola": "adioss", "adios": "hola"}
+	errors = make(map[string][]string)
+	valid = New(&errors)
+	valid.Slice(sliceMap, "In").In([]string{"hola", "adios"})
+	if len(errors) == 0 {
+		t.Errorf("there should be errors...")
+	}
+
+	sliceMap = make([]map[string]string, 1, 1)
+	sliceMap[0] = map[string]string{"holaa": "adios", "adioss": "hola"}
+	errors = make(map[string][]string)
+	valid = New(&errors)
+	valid.Slice(sliceMap, "In").In([]string{"hola", "adios"})
+	if len(errors) > 0 {
+		t.Errorf("there should not be errors...")
+	}
 }
 
 func TestMapRequired(t *testing.T) {

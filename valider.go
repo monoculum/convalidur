@@ -227,6 +227,20 @@ func (sl *Slice) in(n interface{}) *Slice {
 	found := false
 
 	switch sl.value.Kind() {
+	case reflect.Slice, reflect.Array:
+		va := sl.value
+		le := va.Len()
+		for i := 0; i<le; i++ {
+			sl.value = va.Index(i)
+			sl.in(n)
+		}
+	case reflect.Map:
+		va := sl.value
+		keys := sl.value.MapKeys()
+		for _, key := range keys {
+			sl.value = va.MapIndex(key)
+			sl.in(n)
+		}
 	case reflect.String:
 		values := reflect.ValueOf(n)
 		switch values.Kind() {
@@ -352,7 +366,8 @@ func (ma *Map) Range(min, max int) *Map {
 	}
 	switch ma.value.Kind() {
 	case reflect.Map:
-		if ma.value.Len() < min || ma.value.Len() > max {
+		le := ma.value.Len()
+		if le < min || le > max {
 			(*ma.errors)[ma.field] = append((*ma.errors)[ma.field], ErrOutRange.Error())
 		}
 	default:
