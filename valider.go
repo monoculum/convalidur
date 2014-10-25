@@ -10,7 +10,7 @@ import (
 
 var (
 	ErrRequired   = errors.New("is required")
-	ErrNotMatched = errors.New("is not a valid email")
+	ErrNotMatched = errors.New("not matched")
 	ErrNotEqual   = errors.New("is not a equal to value passed")
 	ErrOutRange   = errors.New("is out of range")
 	ErrIn         = errors.New("is not in the values passed")
@@ -23,7 +23,7 @@ var (
 
 const (
 	PATTERN_EMAIL = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"
-	PATTERN_URL   = `(?i)^([a-z]([a-z]|\d|\+|-|\.)*):(\/\/(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?((\[(|(v[\da-f]{1,}\.(([a-z]|\d|-|\.|_|~)|[!\$&'\(\)\*\+,;=]|:)+))\])|((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=])*)(:\d*)?)(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*|(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)|((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)|((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)){0})(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$`
+	PATTERN_URL   = `^((ftp|http|https):\/\/)?(\S+(:\S*)?@)?((([1-9]\d?|1\d\d|2[01]\d|22[0-3])(\.(1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.([0-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|((www\.)?)?(([a-z\x{00a1}-\x{ffff}0-9]+-?-?_?)*[a-z\x{00a1}-\x{ffff}0-9]+)(?:\.([a-z\x{00a1}-\x{ffff}]{2,}))?)|localhost)(:(\d{1,5}))?((\/|\?|#)[^\s]*)?$`
 )
 
 type Validator struct {
@@ -66,7 +66,8 @@ func (str *Str) Len(int int) *Str {
 }
 
 func (str *Str) Range(min, max int) *Str {
-	if str.value != "" && len(str.value) < min || len(str.value) > max {
+	len := len(str.value)
+	if str.value != "" && len < min || len > max {
 		(*str.errors)[str.field] = append((*str.errors)[str.field], ErrOutRange.Error())
 	}
 	return str
@@ -194,8 +195,8 @@ func (sl *Slice) Range(min, max int) *Slice {
 	}
 	switch sl.value.Kind() {
 	case reflect.Slice, reflect.Array:
-		l := sl.value.Len()
-		if l < min || l > max {
+		len := sl.value.Len()
+		if len < min || len > max {
 			(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], ErrOutRange.Error())
 		}
 	default:
@@ -211,10 +212,10 @@ func (sl *Slice) In(values interface{}) *Slice {
 	}
 	switch sl.value.Kind() {
 	case reflect.Slice, reflect.Array:
-		v := sl.value
-		l := v.Len()
-		for i := 0; i < l; i++ {
-			sl.value = v.Index(i)
+		value := sl.value
+		len := value.Len()
+		for i := 0; i < len; i++ {
+			sl.value = value.Index(i)
 			sl.in(values)
 		}
 	default:
@@ -228,17 +229,17 @@ func (sl *Slice) in(n interface{}) *Slice {
 
 	switch sl.value.Kind() {
 	case reflect.Slice, reflect.Array:
-		va := sl.value
-		le := va.Len()
-		for i := 0; i<le; i++ {
-			sl.value = va.Index(i)
+		value := sl.value
+		len := value.Len()
+		for i := 0; i < len; i++ {
+			sl.value = value.Index(i)
 			sl.in(n)
 		}
 	case reflect.Map:
-		va := sl.value
+		value := sl.value
 		keys := sl.value.MapKeys()
 		for _, key := range keys {
-			sl.value = va.MapIndex(key)
+			sl.value = value.MapIndex(key)
 			sl.in(n)
 		}
 	case reflect.String:
@@ -246,16 +247,16 @@ func (sl *Slice) in(n interface{}) *Slice {
 		switch values.Kind() {
 		case reflect.Slice, reflect.Array:
 			for j := 0; j < values.Len(); j++ {
-				t := values.Index(j)
+				value := values.Index(j)
 				str := ""
-				switch t.Kind() {
+				switch value.Kind() {
 				case reflect.String:
-					str = t.String()
+					str = value.String()
 				case reflect.Interface:
-					if m, ok := t.Interface().(string); ok {
+					if m, ok := value.Interface().(string); ok {
 						str = m
-					} else if t.Kind() == reflect.String {
-						str = t.String()
+					} else if value.Kind() == reflect.String {
+						str = value.String()
 					}
 				default:
 					(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], ErrBadParameter.Error())
@@ -275,13 +276,13 @@ func (sl *Slice) in(n interface{}) *Slice {
 		switch values.Kind() {
 		case reflect.Slice, reflect.Array:
 			for j := 0; j < values.Len(); j++ {
-				t := values.Index(j)
+				value := values.Index(j)
 				num := 0
-				switch t.Kind() {
+				switch value.Kind() {
 				case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-					num = int(t.Int())
+					num = int(value.Int())
 				case reflect.Interface:
-					switch p := t.Interface().(type) {
+					switch p := value.Interface().(type) {
 					case int:
 						num = int(p)
 					case int8:
@@ -293,9 +294,9 @@ func (sl *Slice) in(n interface{}) *Slice {
 					case int64:
 						num = int(p)
 					default:
-						switch t.Kind() {
+						switch value.Kind() {
 						case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-							num = int(t.Int())
+							num = int(value.Int())
 						default:
 							(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], ErrBadParameter.Error())
 						}
@@ -366,8 +367,8 @@ func (ma *Map) Range(min, max int) *Map {
 	}
 	switch ma.value.Kind() {
 	case reflect.Map:
-		le := ma.value.Len()
-		if le < min || le > max {
+		len := ma.value.Len()
+		if len < min || len > max {
 			(*ma.errors)[ma.field] = append((*ma.errors)[ma.field], ErrOutRange.Error())
 		}
 	default:
@@ -403,8 +404,8 @@ func (ma *Map) Date(layout string) *Map {
 func (ma *Map) date(layout string) *Map {
 	switch ma.value.Kind() {
 	case reflect.Slice, reflect.Array:
-		l := ma.value.Len()
-		for i := 0; i < l; i++ {
+		len := ma.value.Len()
+		for i := 0; i < len; i++ {
 			ma.value = ma.value.Index(i)
 			ma.date(layout)
 		}
