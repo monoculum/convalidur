@@ -1,4 +1,4 @@
-package valider
+package convalidur
 
 import (
 	"errors"
