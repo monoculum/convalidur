@@ -74,24 +74,22 @@ func (str *Str) Range(min, max int) *Str {
 }
 
 func (str *Str) In(values ...string) *Str {
-	if str.value == "" {
-		return str
-	}
-	for _, value := range values {
-		if str.value == value {
-			return str
+	if str.value != "" {
+		for _, value := range values {
+			if str.value == value {
+				return str
+			}
 		}
+		(*str.errors)[str.field] = append((*str.errors)[str.field], ErrIn.Error())
 	}
-	(*str.errors)[str.field] = append((*str.errors)[str.field], ErrIn.Error())
 	return str
 }
 
 func (str *Str) Date(layout string) *Str {
-	if str.value == "" {
-		return str
-	}
-	if _, err := time.Parse(layout, str.value); err != nil {
-		(*str.errors)[str.field] = append((*str.errors)[str.field], ErrDate.Error())
+	if str.value != "" {
+		if _, err := time.Parse(layout, str.value); err != nil {
+			(*str.errors)[str.field] = append((*str.errors)[str.field], ErrDate.Error())
+		}
 	}
 	return str
 }
@@ -104,20 +102,19 @@ func (str *Str) Email() *Str {
 }
 
 func (str *Str) URL() *Str {
-	if str.value == "" {
-		return str
+	if str.value != "" {
+		return str.RegExp(PATTERN_URL)
 	}
-	return str.RegExp(PATTERN_URL)
+	return str
 }
 
 func (str *Str) RegExp(pattern string) *Str {
-	if str.value == "" {
-		return str
-	}
-	if matched, err := regexp.MatchString(pattern, str.value); err != nil {
-		(*str.errors)[str.field] = append((*str.errors)[str.field], ErrBadParameter.Error())
-	} else if !matched {
-		(*str.errors)[str.field] = append((*str.errors)[str.field], ErrNotMatched.Error())
+	if str.value != "" {
+		if matched, err := regexp.MatchString(pattern, str.value); err != nil {
+			(*str.errors)[str.field] = append((*str.errors)[str.field], ErrBadParameter.Error())
+		} else if !matched {
+			(*str.errors)[str.field] = append((*str.errors)[str.field], ErrNotMatched.Error())
+		}
 	}
 	return str
 }
