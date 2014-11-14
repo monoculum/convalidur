@@ -1,4 +1,4 @@
-package convalidur
+package valider
 
 type Bool struct {
 	value  bool
