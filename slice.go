@@ -5,7 +5,7 @@ import "reflect"
 type Slice struct {
 	raw    interface{}
 	field  string
-	errors *map[string][]Err
+	errors *map[string][]Error
 
 	value reflect.Value
 }
@@ -22,10 +22,10 @@ func (sl *Slice) Required() *Slice {
 	switch sl.value.Kind() {
 	case reflect.Slice, reflect.Array:
 		if sl.value.Len() == 0 {
-			(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], Err{ErrRequired, CodeRequired})
+			(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], Error{ErrRequired, CodeRequired})
 		}
 	default:
-		(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], Err{ErrUnsupported, CodeUnsupported})
+		(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], Error{ErrUnsupported, CodeUnsupported})
 	}
 	return sl
 }
@@ -40,10 +40,10 @@ func (sl *Slice) Range(min, max int) *Slice {
 		case reflect.Slice, reflect.Array:
 			len := sl.value.Len()
 			if len < min || len > max {
-				(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], Err{ErrOutRange, CodeOutRange})
+				(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], Error{ErrOutRange, CodeOutRange})
 			}
 		default:
-			(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], Err{ErrUnsupported, CodeUnsupported})
+			(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], Error{ErrUnsupported, CodeUnsupported})
 		}
 	}
 	return sl
@@ -64,7 +64,7 @@ func (sl *Slice) In(values interface{}) *Slice {
 				sl.in(values)
 			}
 		default:
-			(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], Err{ErrUnsupported, CodeUnsupported})
+			(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], Error{ErrUnsupported, CodeUnsupported})
 		}
 	}
 	return sl
@@ -79,10 +79,10 @@ func (sl *Slice) Len(le int) *Slice {
 		switch sl.value.Kind() {
 		case reflect.Slice, reflect.Array:
 			if sl.value.Len() != le {
-				(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], Err{ErrLen, CodeLen})
+				(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], Error{ErrLen, CodeLen})
 			}
 		default:
-			(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], Err{ErrUnsupported, CodeUnsupported})
+			(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], Error{ErrUnsupported, CodeUnsupported})
 		}
 	}
 	return sl
@@ -123,17 +123,17 @@ func (sl *Slice) in(n interface{}) *Slice {
 						str = value.String()
 					}
 				default:
-					(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], Err{ErrBadParameter, CodeBadParameter})
+					(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], Error{ErrBadParameter, CodeBadParameter})
 				}
 				if sl.value.String() == str {
 					found = true
 				}
 			}
 		default:
-			(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], Err{ErrBadParameter, CodeBadParameter})
+			(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], Error{ErrBadParameter, CodeBadParameter})
 		}
 		if !found {
-			(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], Err{ErrIn, CodeIn})
+			(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], Error{ErrIn, CodeIn})
 		}
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		values := reflect.ValueOf(n)
@@ -162,21 +162,21 @@ func (sl *Slice) in(n interface{}) *Slice {
 						case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 							num = int(value.Int())
 						default:
-							(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], Err{ErrBadParameter, CodeBadParameter})
+							(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], Error{ErrBadParameter, CodeBadParameter})
 						}
 					}
 				default:
-					(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], Err{ErrBadParameter, CodeBadParameter})
+					(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], Error{ErrBadParameter, CodeBadParameter})
 				}
 				if int(sl.value.Int()) == num {
 					found = true
 				}
 			}
 		default:
-			(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], Err{ErrBadParameter, CodeBadParameter})
+			(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], Error{ErrBadParameter, CodeBadParameter})
 		}
 		if !found {
-			(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], Err{ErrIn, CodeIn})
+			(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], Error{ErrIn, CodeIn})
 		}
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
 		// TODO
@@ -187,7 +187,7 @@ func (sl *Slice) in(n interface{}) *Slice {
 	case reflect.Interface:
 		// TODO
 	default:
-		(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], Err{ErrUnsupported, CodeUnsupported})
+		(*sl.errors)[sl.field] = append((*sl.errors)[sl.field], Error{ErrUnsupported, CodeUnsupported})
 	}
 
 	return sl

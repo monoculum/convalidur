@@ -8,7 +8,7 @@ import (
 type Str struct {
 	value  string
 	field  string
-	errors *map[string][]Err
+	errors *map[string][]Error
 }
 
 func (v *Validator) Str(value, field string) *Str {
@@ -17,28 +17,28 @@ func (v *Validator) Str(value, field string) *Str {
 
 func (str *Str) Required() *Str {
 	if str.value == "" {
-		(*str.errors)[str.field] = append((*str.errors)[str.field], Err{ErrRequired, CodeRequired})
+		(*str.errors)[str.field] = append((*str.errors)[str.field], Error{ErrRequired, CodeRequired})
 	}
 	return str
 }
 
 func (str *Str) Equal(eq string) *Str {
 	if str.value != "" && str.value != eq {
-		(*str.errors)[str.field] = append((*str.errors)[str.field], Err{ErrNotEqual, CodeNotEqual})
+		(*str.errors)[str.field] = append((*str.errors)[str.field], Error{ErrNotEqual, CodeNotEqual})
 	}
 	return str
 }
 
 func (str *Str) NotEqual(eq string) *Str {
 	if str.value != "" && str.value == eq {
-		(*str.errors)[str.field] = append((*str.errors)[str.field], Err{ErrNotEqual, CodeNotEqual})
+		(*str.errors)[str.field] = append((*str.errors)[str.field], Error{ErrNotEqual, CodeNotEqual})
 	}
 	return str
 }
 
 func (str *Str) Len(int int) *Str {
 	if str.value != "" && len(str.value) != int {
-		(*str.errors)[str.field] = append((*str.errors)[str.field], Err{ErrLen, CodeLen})
+		(*str.errors)[str.field] = append((*str.errors)[str.field], Error{ErrLen, CodeLen})
 	}
 	return str
 }
@@ -46,7 +46,7 @@ func (str *Str) Len(int int) *Str {
 func (str *Str) Range(min, max int) *Str {
 	len := len(str.value)
 	if str.value != "" && len < min || len > max {
-		(*str.errors)[str.field] = append((*str.errors)[str.field], Err{ErrOutRange, CodeOutRange})
+		(*str.errors)[str.field] = append((*str.errors)[str.field], Error{ErrOutRange, CodeOutRange})
 	}
 	return str
 }
@@ -58,7 +58,7 @@ func (str *Str) In(values ...string) *Str {
 				return str
 			}
 		}
-		(*str.errors)[str.field] = append((*str.errors)[str.field], Err{ErrIn, CodeIn})
+		(*str.errors)[str.field] = append((*str.errors)[str.field], Error{ErrIn, CodeIn})
 	}
 	return str
 }
@@ -66,7 +66,7 @@ func (str *Str) In(values ...string) *Str {
 func (str *Str) Date(layout string) *Str {
 	if str.value != "" {
 		if _, err := time.Parse(layout, str.value); err != nil {
-			(*str.errors)[str.field] = append((*str.errors)[str.field], Err{ErrDate, CodeDate})
+			(*str.errors)[str.field] = append((*str.errors)[str.field], Error{ErrDate, CodeDate})
 		}
 	}
 	return str
@@ -89,9 +89,9 @@ func (str *Str) URL() *Str {
 func (str *Str) RegExp(pattern string) *Str {
 	if str.value != "" {
 		if matched, err := regexp.MatchString(pattern, str.value); err != nil {
-			(*str.errors)[str.field] = append((*str.errors)[str.field], Err{ErrBadParameter, CodeBadParameter})
+			(*str.errors)[str.field] = append((*str.errors)[str.field], Error{ErrBadParameter, CodeBadParameter})
 		} else if !matched {
-			(*str.errors)[str.field] = append((*str.errors)[str.field], Err{ErrNotMatched, CodeNotMatched})
+			(*str.errors)[str.field] = append((*str.errors)[str.field], Error{ErrNotMatched, CodeNotMatched})
 		}
 	}
 	return str

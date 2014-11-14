@@ -8,7 +8,7 @@ import (
 type Map struct {
 	raw    interface{}
 	field  string
-	errors *map[string][]Err
+	errors *map[string][]Error
 
 	value reflect.Value
 }
@@ -25,10 +25,10 @@ func (ma *Map) Required() *Map {
 	switch ma.value.Kind() {
 	case reflect.Map:
 		if ma.value.Len() == 0 {
-			(*ma.errors)[ma.field] = append((*ma.errors)[ma.field], Err{ErrRequired, CodeRequired})
+			(*ma.errors)[ma.field] = append((*ma.errors)[ma.field], Error{ErrRequired, CodeRequired})
 		}
 	default:
-		(*ma.errors)[ma.field] = append((*ma.errors)[ma.field], Err{ErrUnsupported, CodeUnsupported})
+		(*ma.errors)[ma.field] = append((*ma.errors)[ma.field], Error{ErrUnsupported, CodeUnsupported})
 	}
 	return ma
 }
@@ -43,11 +43,11 @@ func (ma *Map) Keys(keys ...string) *Map {
 		case reflect.Map:
 		for _, key := range keys {
 			if !ma.value.MapIndex(reflect.ValueOf(key)).IsValid() {
-				(*ma.errors)[ma.field] = append((*ma.errors)[ma.field], Err{ErrNotFound, CodeNotFound})
+				(*ma.errors)[ma.field] = append((*ma.errors)[ma.field], Error{ErrNotFound, CodeNotFound})
 			}
 		}
 		default:
-			(*ma.errors)[ma.field] = append((*ma.errors)[ma.field], Err{ErrUnsupported, CodeUnsupported})
+			(*ma.errors)[ma.field] = append((*ma.errors)[ma.field], Error{ErrUnsupported, CodeUnsupported})
 		}
 	}
 	return ma
@@ -63,10 +63,10 @@ func (ma *Map) Range(min, max int) *Map {
 		case reflect.Map:
 			len := ma.value.Len()
 			if len < min || len > max {
-				(*ma.errors)[ma.field] = append((*ma.errors)[ma.field], Err{ErrOutRange, CodeOutRange})
+				(*ma.errors)[ma.field] = append((*ma.errors)[ma.field], Error{ErrOutRange, CodeOutRange})
 			}
 		default:
-			(*ma.errors)[ma.field] = append((*ma.errors)[ma.field], Err{ErrUnsupported, CodeUnsupported})
+			(*ma.errors)[ma.field] = append((*ma.errors)[ma.field], Error{ErrUnsupported, CodeUnsupported})
 		}
 	}
 	return ma
@@ -89,7 +89,7 @@ func (ma *Map) Date(layout string) *Map {
 			ma.date(layout)
 		}
 		default:
-			(*ma.errors)[ma.field] = append((*ma.errors)[ma.field], Err{ErrUnsupported, CodeUnsupported})
+			(*ma.errors)[ma.field] = append((*ma.errors)[ma.field], Error{ErrUnsupported, CodeUnsupported})
 		}
 	}
 	return ma
@@ -105,10 +105,10 @@ func (ma *Map) date(layout string) *Map {
 		}
 	case reflect.String:
 		if _, err := time.Parse(layout, ma.value.String()); err != nil {
-			(*ma.errors)[ma.field] = append((*ma.errors)[ma.field], Err{ErrDate, CodeDate})
+			(*ma.errors)[ma.field] = append((*ma.errors)[ma.field], Error{ErrDate, CodeDate})
 		}
 	default:
-		(*ma.errors)[ma.field] = append((*ma.errors)[ma.field], Err{ErrUnsupported, CodeUnsupported})
+		(*ma.errors)[ma.field] = append((*ma.errors)[ma.field], Error{ErrUnsupported, CodeUnsupported})
 	}
 	return ma
 }
