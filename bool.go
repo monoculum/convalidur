@@ -3,7 +3,7 @@ package valider
 type Bool struct {
 	value  bool
 	field  string
-	errors *map[string][]Error
+	errors *Errors
 }
 
 func (v *Validator) Bool(value bool, field string) *Bool {

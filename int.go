@@ -5,7 +5,7 @@ import "strconv"
 type Int struct {
 	value  int
 	field  string
-	errors *map[string][]Error
+	errors *Errors
 }
 
 func (v *Validator) Int(value int, field string) *Int {

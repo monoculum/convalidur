@@ -8,7 +8,7 @@ import (
 type Map struct {
 	raw    interface{}
 	field  string
-	errors *map[string][]Error
+	errors *Errors
 
 	value reflect.Value
 }
@@ -41,11 +41,11 @@ func (ma *Map) Keys(keys ...string) *Map {
 	if ma.value.Len() != 0 {
 		switch ma.value.Kind() {
 		case reflect.Map:
-		for _, key := range keys {
-			if !ma.value.MapIndex(reflect.ValueOf(key)).IsValid() {
-				(*ma.errors)[ma.field] = append((*ma.errors)[ma.field], Error{ErrNotFound, CodeNotFound})
+			for _, key := range keys {
+				if !ma.value.MapIndex(reflect.ValueOf(key)).IsValid() {
+					(*ma.errors)[ma.field] = append((*ma.errors)[ma.field], Error{ErrNotFound, CodeNotFound})
+				}
 			}
-		}
 		default:
 			(*ma.errors)[ma.field] = append((*ma.errors)[ma.field], Error{ErrUnsupported, CodeUnsupported})
 		}
@@ -84,10 +84,10 @@ func (ma *Map) Date(layout string) *Map {
 	if ma.value.Len() != 0 {
 		switch ma.value.Kind() {
 		case reflect.Map:
-		for _, key := range ma.value.MapKeys() {
-			ma.value = ma.value.MapIndex(key)
-			ma.date(layout)
-		}
+			for _, key := range ma.value.MapKeys() {
+				ma.value = ma.value.MapIndex(key)
+				ma.date(layout)
+			}
 		default:
 			(*ma.errors)[ma.field] = append((*ma.errors)[ma.field], Error{ErrUnsupported, CodeUnsupported})
 		}

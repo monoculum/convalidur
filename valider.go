@@ -14,24 +14,26 @@ var (
 	ErrLen        = errors.New("is more length than value passed")
 	ErrDate       = errors.New("is not a valid datetime")
 	ErrNotFound   = errors.New("not found the value")
+	ErrExists     = errors.New("the value exists")
 
 	ErrUnsupported  = errors.New("unsopported type")
 	ErrBadParameter = errors.New("bad parameter")
 )
 
 const (
-	CodeRequired = iota
-	CodeNotMatched
-	CodeNotEqual
-	CodeEqual
-	CodeOutRange
-	CodeIn
-	CodeLen
-	CodeDate
-	CodeNotFound
+	CodeRequired   = "required"
+	CodeNotMatched = "not_matched"
+	CodeNotEqual   = "not_equal"
+	CodeEqual      = "equal"
+	CodeOutRange   = "out_range"
+	CodeIn         = "in"
+	CodeLen        = "length"
+	CodeDate       = "not_date"
+	CodeNotFound   = "not_found"
+	CodeExists     = "exists"
 
-	CodeUnsupported
-	CodeBadParameter
+	CodeUnsupported  = "unsopported_type"
+	CodeBadParameter = "bad_parameter"
 )
 
 const (
@@ -39,15 +41,21 @@ const (
 	PATTERN_URL   = `^((ftp|http|https):\/\/)?(\S+(:\S*)?@)?((([1-9]\d?|1\d\d|2[01]\d|22[0-3])(\.(1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.([0-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|((www\.)?)?(([a-z\x{00a1}-\x{ffff}0-9]+-?-?_?)*[a-z\x{00a1}-\x{ffff}0-9]+)(?:\.([a-z\x{00a1}-\x{ffff}]{2,}))?)|localhost)(:(\d{1,5}))?((\/|\?|#)[^\s]*)?$`
 )
 
+type Errors map[string][]Error
+
 type Error struct {
 	Err  error
-	Code int
+	Code string
 }
 
 type Validator struct {
-	Errors *map[string][]Error
+	Errors *Errors
 }
 
-func New(errors *map[string][]Error) *Validator {
+func New(errors *Errors) *Validator {
 	return &Validator{errors}
+}
+
+func (v *Validator) AddError(name string, err error, code string) {
+	(*v.Errors)[name] = append((*v.Errors)[name], Error{err, code})
 }

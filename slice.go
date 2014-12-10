@@ -5,7 +5,7 @@ import "reflect"
 type Slice struct {
 	raw    interface{}
 	field  string
-	errors *map[string][]Error
+	errors *Errors
 
 	value reflect.Value
 }
@@ -102,10 +102,10 @@ func (sl *Slice) in(n interface{}) *Slice {
 	case reflect.Map:
 		value := sl.value
 		keys := sl.value.MapKeys()
-	for _, key := range keys {
-		sl.value = value.MapIndex(key)
-		sl.in(n)
-	}
+		for _, key := range keys {
+			sl.value = value.MapIndex(key)
+			sl.in(n)
+		}
 	case reflect.String:
 		values := reflect.ValueOf(n)
 		switch values.Kind() {

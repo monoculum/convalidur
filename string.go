@@ -1,14 +1,14 @@
 package valider
 
 import (
-	"time"
 	"regexp"
+	"time"
 )
 
 type Str struct {
 	value  string
 	field  string
-	errors *map[string][]Error
+	errors *Errors
 }
 
 func (v *Validator) Str(value, field string) *Str {
