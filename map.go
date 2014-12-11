@@ -33,6 +33,26 @@ func (ma *Map) Required() *Map {
 	return ma
 }
 
+func (ma *Map) SameKeys(keys ...string) *Map {
+	ma.value = reflect.ValueOf(ma.raw)
+	if ma.value.Kind() == reflect.Ptr {
+		ma.value = ma.value.Elem()
+	}
+	if ma.value.Len() != 0 {
+		switch ma.value.Kind() {
+		case reflect.Map:
+		for _, key := range keys {
+			if !ma.value.MapIndex(reflect.ValueOf(key)).IsValid() {
+				(*ma.errors)[ma.field+"."+key] = append((*ma.errors)[ma.field+"."+key], Error{ErrNotFound, CodeNotFound})
+			}
+		}
+		default:
+			(*ma.errors)[ma.field] = append((*ma.errors)[ma.field], Error{ErrUnsupported, CodeUnsupported})
+		}
+	}
+	return ma
+}
+
 func (ma *Map) Keys(keys ...string) *Map {
 	ma.value = reflect.ValueOf(ma.raw)
 	if ma.value.Kind() == reflect.Ptr {
@@ -41,8 +61,15 @@ func (ma *Map) Keys(keys ...string) *Map {
 	if ma.value.Len() != 0 {
 		switch ma.value.Kind() {
 		case reflect.Map:
-			for _, key := range keys {
-				if !ma.value.MapIndex(reflect.ValueOf(key)).IsValid() {
+			k := ma.value.MapKeys()
+			for _, v := range k {
+				found := false
+				for _, key := range keys {
+					if v.String() == key {
+						found = true
+					}
+				}
+				if !found {
 					(*ma.errors)[ma.field] = append((*ma.errors)[ma.field], Error{ErrNotFound, CodeNotFound})
 				}
 			}
