@@ -63,14 +63,15 @@ func (ma *Map) Keys(keys ...string) *Map {
 		case reflect.Map:
 			k := ma.value.MapKeys()
 			for _, v := range k {
+				m := v.String()
 				found := false
 				for _, key := range keys {
-					if v.String() == key {
+					if m == key {
 						found = true
 					}
 				}
 				if !found {
-					(*ma.errors)[ma.field] = append((*ma.errors)[ma.field], Error{ErrNotFound, CodeNotFound})
+					(*ma.errors)[ma.field+"."+m] = append((*ma.errors)[ma.field+"."+m], Error{ErrNotFound, CodeNotFound})
 				}
 			}
 		default:
