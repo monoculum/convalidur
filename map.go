@@ -81,6 +81,24 @@ func (ma *Map) Keys(keys ...string) *Map {
 	return ma
 }
 
+func (ma *Map) Key(key string) *Map {
+	ma.value = reflect.ValueOf(ma.raw)
+	if ma.value.Kind() == reflect.Ptr {
+		ma.value = ma.value.Elem()
+	}
+	if ma.value.Len() != 0 {
+		switch ma.value.Kind() {
+		case reflect.Map:
+			if !ma.value.MapIndex(reflect.ValueOf(key)).IsValid() {
+				(*ma.errors)[ma.field+"."+key] = append((*ma.errors)[ma.field+"."+key], Error{ErrNotFoundKey, CodeNotFoundKey})
+			}
+		default:
+			(*ma.errors)[ma.field] = append((*ma.errors)[ma.field], Error{ErrUnsupported, CodeUnsupported})
+		}
+	}
+	return ma
+}
+
 func (ma *Map) Range(min, max int) *Map {
 	ma.value = reflect.ValueOf(ma.raw)
 	if ma.value.Kind() == reflect.Ptr {
@@ -100,7 +118,7 @@ func (ma *Map) Range(min, max int) *Map {
 	return ma
 }
 
-func (ma *Map) In(values interface{}) *Map {
+func (ma *Map) In(values ...interface{}) *Map {
 	return ma
 }
 

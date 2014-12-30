@@ -5,32 +5,34 @@ import (
 )
 
 var (
-	ErrRequired   = errors.New("is required")
-	ErrNotMatched = errors.New("not matched")
-	ErrNotEqual   = errors.New("is not equal to value passed")
-	ErrEqual      = errors.New("is equal to value passed")
-	ErrOutRange   = errors.New("is out of range")
-	ErrIn         = errors.New("is not in the values passed")
-	ErrLen        = errors.New("is more length than value passed")
-	ErrDate       = errors.New("is not a valid datetime")
-	ErrNotFound   = errors.New("not found the value")
-	ErrExists     = errors.New("the value exists")
+	ErrRequired    = errors.New("is required")
+	ErrNotMatched  = errors.New("not matched")
+	ErrNotEqual    = errors.New("is not equal to value passed")
+	ErrEqual       = errors.New("is equal to value passed")
+	ErrOutRange    = errors.New("is out of range")
+	ErrIn          = errors.New("is not in the values passed")
+	ErrLen         = errors.New("is more length than value passed")
+	ErrDate        = errors.New("is not a valid datetime")
+	ErrNotFound    = errors.New("not found the value")
+	ErrExists      = errors.New("the value exists")
+	ErrNotFoundKey = errors.New("the key is not found in the map")
 
 	ErrUnsupported  = errors.New("unsopported type")
 	ErrBadParameter = errors.New("bad parameter")
 )
 
 const (
-	CodeRequired   = "required"
-	CodeNotMatched = "not_matched"
-	CodeNotEqual   = "not_equal"
-	CodeEqual      = "equal"
-	CodeOutRange   = "out_range"
-	CodeIn         = "in"
-	CodeLen        = "length"
-	CodeDate       = "not_date"
-	CodeNotFound   = "not_found"
-	CodeExists     = "exists"
+	CodeRequired    = "required"
+	CodeNotMatched  = "not_matched"
+	CodeNotEqual    = "not_equal"
+	CodeEqual       = "equal"
+	CodeOutRange    = "out_range"
+	CodeIn          = "in"
+	CodeLen         = "length"
+	CodeDate        = "not_date"
+	CodeNotFound    = "not_found"
+	CodeExists      = "exists"
+	CodeNotFoundKey = "not_found_key"
 
 	CodeUnsupported  = "unsopported_type"
 	CodeBadParameter = "bad_parameter"
