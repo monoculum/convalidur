@@ -15,7 +15,6 @@ var (
 	ErrDate        = errors.New("is not a valid datetime")
 	ErrNotFound    = errors.New("not found the value")
 	ErrExists      = errors.New("the value exists")
-	ErrNotFoundKey = errors.New("the key is not found in the map")
 
 	ErrUnsupported  = errors.New("unsopported type")
 	ErrBadParameter = errors.New("bad parameter")
@@ -32,7 +31,6 @@ const (
 	CodeDate        = "not_date"
 	CodeNotFound    = "not_found"
 	CodeExists      = "exists"
-	CodeNotFoundKey = "not_found_key"
 
 	CodeUnsupported  = "unsopported_type"
 	CodeBadParameter = "bad_parameter"
