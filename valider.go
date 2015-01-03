@@ -43,9 +43,13 @@ const (
 
 type Errors map[string][]Error
 
+func (f *Errors) Add(name string, err error, code string) {
+	(*f)[name] = append((*f)[name], Error{err, code})
+}
+
 type Error struct {
-	Err  error
-	Code string
+	Error  error
+	Code   string
 }
 
 type Validator struct {
@@ -54,8 +58,4 @@ type Validator struct {
 
 func New(errors *Errors) *Validator {
 	return &Validator{errors}
-}
-
-func (v *Validator) AddError(name string, err error, code string) {
-	(*v.Errors)[name] = append((*v.Errors)[name], Error{err, code})
 }

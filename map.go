@@ -81,6 +81,14 @@ func (ma *Map) Keys(keys ...string) *Map {
 	return ma
 }
 
+func (ma *Map) InValues(values ...interface{}) *Map {
+	return ma
+}
+
+func (ma *Map) Values(values ...interface{}) *Map {
+	return ma
+}
+
 func (ma *Map) Range(min, max int) *Map {
 	ma.value = reflect.ValueOf(ma.raw)
 	if ma.value.Kind() == reflect.Ptr {
@@ -97,10 +105,6 @@ func (ma *Map) Range(min, max int) *Map {
 			(*ma.errors)[ma.field] = append((*ma.errors)[ma.field], Error{ErrUnsupported, CodeUnsupported})
 		}
 	}
-	return ma
-}
-
-func (ma *Map) In(values ...interface{}) *Map {
 	return ma
 }
 
