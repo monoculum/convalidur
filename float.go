@@ -14,28 +14,28 @@ func (v *Validator) Float(value float64, field string) *Float {
 
 func (f *Float) Required() *Float {
 	if f.value == 0 {
-		f.errors[f.field] = append(f.errors[f.field], Error{ErrRequired, CodeRequired})
+		f.errors[f.field] = append(f.errors[f.field], Error{ErrRequired, CodeRequired, nil})
 	}
 	return f
 }
 
 func (f *Float) Len(num int) *Float {
 	if f.value != 0 && len(strconv.FormatFloat(f.value, 'f', -1, 64)) != num {
-		f.errors[f.field] = append(f.errors[f.field], Error{ErrLen, CodeLen})
+		f.errors[f.field] = append(f.errors[f.field], Error{ErrLen, CodeLen, num})
 	}
 	return f
 }
 
 func (f *Float) Equal(eq float64) *Float {
 	if f.value != 0 && f.value != eq {
-		f.errors[f.field] = append(f.errors[f.field], Error{ErrNotEqual, CodeNotEqual})
+		f.errors[f.field] = append(f.errors[f.field], Error{ErrNotEqual, CodeNotEqual, eq})
 	}
 	return f
 }
 
 func (f *Float) Range(min, max float64) *Float {
 	if f.value != 0 && (f.value < min || f.value > max) {
-		f.errors[f.field] = append(f.errors[f.field], Error{ErrOutRange, CodeOutRange})
+		f.errors[f.field] = append(f.errors[f.field], Error{ErrOutRange, CodeOutRange, []float64{min, max}})
 	}
 	return f
 }

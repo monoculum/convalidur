@@ -25,10 +25,10 @@ func (ma *Map) Required() *Map {
 	switch ma.value.Kind() {
 	case reflect.Map:
 		if ma.value.Len() == 0 {
-			ma.errors[ma.field] = append(ma.errors[ma.field], Error{ErrRequired, CodeRequired})
+			ma.errors[ma.field] = append(ma.errors[ma.field], Error{ErrRequired, CodeRequired, nil})
 		}
 	default:
-		ma.errors[ma.field] = append(ma.errors[ma.field], Error{ErrUnsupported, CodeUnsupported})
+		ma.errors[ma.field] = append(ma.errors[ma.field], Error{ErrUnsupported, CodeUnsupported, nil})
 	}
 	return ma
 }
@@ -51,11 +51,11 @@ func (ma *Map) InKeys(keys ...string) *Map {
 					}
 				}
 				if !found {
-					ma.errors[ma.field+"."+m] = append(ma.errors[ma.field+"."+m], Error{ErrNotFound, CodeNotFound})
+					ma.errors[ma.field+"."+m] = append(ma.errors[ma.field+"."+m], Error{ErrNotFound, CodeNotFound, nil})
 				}
 			}
 		default:
-			ma.errors[ma.field] = append(ma.errors[ma.field], Error{ErrUnsupported, CodeUnsupported})
+			ma.errors[ma.field] = append(ma.errors[ma.field], Error{ErrUnsupported, CodeUnsupported, nil})
 		}
 	}
 	return ma
@@ -71,11 +71,11 @@ func (ma *Map) Keys(keys ...string) *Map {
 		case reflect.Map:
 			for _, key := range keys {
 				if !ma.value.MapIndex(reflect.ValueOf(key)).IsValid() {
-					ma.errors[ma.field+"."+key] = append(ma.errors[ma.field+"."+key], Error{ErrNotFound, CodeNotFound})
+					ma.errors[ma.field+"."+key] = append(ma.errors[ma.field+"."+key], Error{ErrNotFound, CodeNotFound, nil})
 				}
 			}
 		default:
-			ma.errors[ma.field] = append(ma.errors[ma.field], Error{ErrUnsupported, CodeUnsupported})
+			ma.errors[ma.field] = append(ma.errors[ma.field], Error{ErrUnsupported, CodeUnsupported, nil})
 		}
 	}
 	return ma
@@ -99,10 +99,10 @@ func (ma *Map) Range(min, max int) *Map {
 		case reflect.Map:
 			len := ma.value.Len()
 			if len < min || len > max {
-				ma.errors[ma.field] = append(ma.errors[ma.field], Error{ErrOutRange, CodeOutRange})
+				ma.errors[ma.field] = append(ma.errors[ma.field], Error{ErrOutRange, CodeOutRange, []int{min, max}})
 			}
 		default:
-			ma.errors[ma.field] = append(ma.errors[ma.field], Error{ErrUnsupported, CodeUnsupported})
+			ma.errors[ma.field] = append(ma.errors[ma.field], Error{ErrUnsupported, CodeUnsupported, []int{min, max}})
 		}
 	}
 	return ma
@@ -121,7 +121,7 @@ func (ma *Map) Date(layout string) *Map {
 				ma.date(layout)
 			}
 		default:
-			ma.errors[ma.field] = append(ma.errors[ma.field], Error{ErrUnsupported, CodeUnsupported})
+			ma.errors[ma.field] = append(ma.errors[ma.field], Error{ErrUnsupported, CodeUnsupported, layout})
 		}
 	}
 	return ma
@@ -137,10 +137,10 @@ func (ma *Map) date(layout string) *Map {
 		}
 	case reflect.String:
 		if _, err := time.Parse(layout, ma.value.String()); err != nil {
-			ma.errors[ma.field] = append(ma.errors[ma.field], Error{ErrDate, CodeDate})
+			ma.errors[ma.field] = append(ma.errors[ma.field], Error{ErrDate, CodeDate, layout})
 		}
 	default:
-		ma.errors[ma.field] = append(ma.errors[ma.field], Error{ErrUnsupported, CodeUnsupported})
+		ma.errors[ma.field] = append(ma.errors[ma.field], Error{ErrUnsupported, CodeUnsupported, layout})
 	}
 	return ma
 }

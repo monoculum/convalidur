@@ -12,30 +12,30 @@ func (v *Validator) Int(value int, field string) *Int {
 	return &Int{value, field, v.Errors}
 }
 
-func (int *Int) Required() *Int {
-	if int.value == 0 {
-		int.errors[int.field] = append(int.errors[int.field], Error{ErrRequired, CodeRequired})
+func (it *Int) Required() *Int {
+	if it.value == 0 {
+		it.errors[it.field] = append(it.errors[it.field], Error{ErrRequired, CodeRequired, nil})
 	}
-	return int
+	return it
 }
 
-func (int *Int) Len(num int) *Int {
-	if int.value != 0 && len(strconv.Itoa(int.value)) != num {
-		int.errors[int.field] = append(int.errors[int.field], Error{ErrLen, CodeLen})
+func (it *Int) Len(num int) *Int {
+	if it.value != 0 && len(strconv.Itoa(it.value)) != num {
+		it.errors[it.field] = append(it.errors[it.field], Error{ErrLen, CodeLen, num})
 	}
-	return int
+	return it
 }
 
-func (int *Int) Equal(eq int) *Int {
-	if int.value != 0 && int.value != eq {
-		int.errors[int.field] = append(int.errors[int.field], Error{ErrNotEqual, CodeNotEqual})
+func (it *Int) Equal(eq int) *Int {
+	if it.value != 0 && it.value != eq {
+		it.errors[it.field] = append(it.errors[it.field], Error{ErrNotEqual, CodeNotEqual, eq})
 	}
-	return int
+	return it
 }
 
-func (int *Int) Range(min, max int) *Int {
-	if int.value != 0 && (int.value < min || int.value > max) {
-		int.errors[int.field] = append(int.errors[int.field], Error{ErrOutRange, CodeOutRange})
+func (it *Int) Range(min, max int) *Int {
+	if it.value != 0 && (it.value < min || it.value > max) {
+		it.errors[it.field] = append(it.errors[it.field], Error{ErrOutRange, CodeOutRange, []int{min, max}})
 	}
-	return int
+	return it
 }
